@@ -1,20 +1,33 @@
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import authService from '../../appwrite/auth'
-import { logout } from '../../store/authSlice'
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import authService from "../../appwrite/auth";
+import { logout } from "../../store/authSlice";
 
-function LogoutBtn() {
-    const dispatch = useDispatch() // 1 pehle yeh bnayege
-    const logoutHandler = () =>{ // 2 
-          authService.logout().then(()=>{ // appwrite mai logout ek promise jo apko .then se handle krna padega
-            dispatch(logout()) // agr logout successful ho gya to usse dispatch kr denge taki store k andr jo imp. info hai vo updated rhe
-          })
+function LogoutBtn({ className }) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const logoutHandler = async () => {
+    setLoading(true);
+    try {
+      await authService.logout();
+      dispatch(logout());
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
   return (
     <button
-    onClick={logoutHandler}
-    >Logout</button>
-  )
+      onClick={logoutHandler}
+      disabled={loading}
+      className={`text-lg font-bold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl transition-all ${className}`}
+    >
+      {loading ? "Logging out..." : "Logout"}
+    </button>
+  );
 }
 
-export default LogoutBtn
+export default LogoutBtn;
