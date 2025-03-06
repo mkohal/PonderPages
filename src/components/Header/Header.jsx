@@ -66,19 +66,17 @@ export default function Header() {
               <button
                 key={item.name}
                 onClick={() => navigate(item.slug)}
-                className={`text-lg font-semibold text-white px-4 py-2 rounded-xl transition-all ${
+                className={`text-lg font-semibold text-black border border-black px-4 py-2 rounded-md transition-all ${
                   location.pathname === item.slug
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-500 hover:bg-gray-600"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : null
                 }`}
               >
                 {item.name}
               </button>
             ) : null
           )}
-          {authStatus && (
-            <LogoutBtn className="text-lg font-bold text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl transition-all" />
-          )}
+          {authStatus && <LogoutBtn />}
         </div>
 
         {/* Mobile Menu Button */}
@@ -123,10 +121,10 @@ export default function Header() {
                       navigate(item.slug);
                       setIsMobileMenuOpen(false);
                     }}
-                    className={`text-base font-medium text-white px-3 py-2 rounded-lg transition-all w-full text-center ${
+                    className={`text-base font-medium text-black px-3 py-2 border border-black rounded-md transition-all w-full text-center ${
                       location.pathname === item.slug
-                        ? "bg-blue-600 hover:bg-blue-700"
-                        : "bg-gray-500 hover:bg-gray-600"
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : null
                     }`}
                   >
                     {item.name}

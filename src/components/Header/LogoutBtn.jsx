@@ -23,7 +23,7 @@ function LogoutBtn({ className }) {
     <button
       onClick={logoutHandler}
       disabled={loading}
-      className={`text-lg font-bold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl transition-all ${className}`}
+      className={`text-lg font-bold text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition-all ${className}`}
     >
       {loading ? "Logging out..." : "Logout"}
     </button>

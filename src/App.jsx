@@ -6,9 +6,10 @@ import { login } from './store/authSlice' // 8 jo method dispatch krna hai vo hu
 import { logout } from './store/authSlice' 
 import { Footer, Header } from './components'
 import { Outlet } from 'react-router-dom'
+import { Toaster } from "react-hot-toast";
 
 import { useLocation } from 'react-router-dom';
-import Home from './pages/Home';
+import Home from "./pages/Home";
 
 function App() {
   const [loading, setLoading] = useState(true); // 1 loading state is liye bnai kyuki jb hum application se data
@@ -41,17 +42,18 @@ function App() {
 
   return !loading ? (
     <div className="min-h-screen flex flex-col">
-      <Header /> {/* Fixed header */}
+      <Toaster position="top-center" reverseOrder={false} />
+      <Header />
       <div className="flex-grow w-full">
         {isHomePage ? (
-          <Home /> // Show carousel on Home Page
+          <Home/> // Updated Home Page component
         ) : (
           <main className="flex-grow">
             <Outlet />
           </main>
         )}
       </div>
-      <Footer /> {/* Fixed footer */}
+      <Footer />
     </div>
   ) : null;
 }
