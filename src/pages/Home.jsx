@@ -37,7 +37,7 @@ export default function Home() {
 return (
   <div className="w-full min-h-screen bg-gray-100 text-black">
     {/* Hero Section */}
-    <section className="relative flex flex-col items-center justify-center h-[35vh] bg-cover bg-center bg-[url('/path-to-hero-image.jpg')] text-black text-center px-6">
+    <section className="relative flex flex-col items-center justify-center h-[30vh] bg-cover bg-center bg-[url('/path-to-hero-image.jpg')] text-black text-center px-6">
       <h1 className="mt-16 text-4xl md:text-6xl font-bold drop-shadow-lg">
         Welcome to Ponder Pages
       </h1>
