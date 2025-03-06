@@ -37,7 +37,7 @@ export default function Home() {
 return (
   <div className="w-full min-h-screen bg-gray-100 text-black">
     {/* Hero Section */}
-    <section className="relative flex flex-col items-center justify-center h-[26vh] bg-cover bg-center bg-[url('/path-to-hero-image.jpg')] text-black text-center px-6">
+    <section className="relative flex flex-col items-center justify-center h-[32vh] bg-cover bg-center bg-[url('/path-to-hero-image.jpg')] text-black text-center px-6">
       <h1 className="mt-16 text-4xl md:text-6xl font-bold drop-shadow-lg">
         Welcome to Ponder Pages
       </h1>
@@ -45,7 +45,7 @@ return (
         Discover, Read, and Share Stories That Inspire
       </p>
       <button
-        className="mt-6 px-6 py-3 text-lg rounded-md bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold"
+        className="mt-6 mb-3 px-6 py-3 text-lg rounded-md bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold"
         onClick={handleExploreBlogs}
       >
         Explore Blogs
