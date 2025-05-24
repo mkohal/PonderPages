@@ -86,7 +86,7 @@ export default function PostForm({ post }) {
       if (post) {
         dbPost = await appwriteService.updatePost(post.$id, postData);
       } else {
-        dbPost = await appwriteService.createPost(postData); // ✅ userId is now included
+        dbPost = await appwriteService.createPost(postData); //userId included
       }
 
       if (dbPost) {

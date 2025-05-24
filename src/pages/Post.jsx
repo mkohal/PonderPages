@@ -27,9 +27,6 @@ export default function Post() {
     try {
       const status = await appwriteService.deletePost(post.$id);
       if (status) {
-        // If you still store any Appwrite file ID and want to delete, do it here
-        // But if images are on Cloudinary, no need to call deleteFile()
-        // await appwriteService.deleteFile(post.featuredImage);
         navigate("/my-posts");
       }
     } catch (error) {
