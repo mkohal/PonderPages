@@ -1,16 +1,17 @@
 import React from "react";
-import appwriteService from "../appwrite/config";
 import { Link } from "react-router-dom";
 
 function PostCard({ $id, title, featuredImage }) {
   return (
     <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
       <Link to={`/post/${$id}`}>
-        <img
-          className="rounded-t-lg w-full h-48 object-cover"
-          src={appwriteService.getFilePreview(featuredImage)}
-          alt={title}
-        />
+        {featuredImage && (
+          <img
+            className="rounded-t-lg w-full h-48 object-cover"
+            src={featuredImage}
+            alt={title}
+          />
+        )}
       </Link>
       <div className="p-5">
         <Link to={`/post/${$id}`}>
@@ -19,7 +20,6 @@ function PostCard({ $id, title, featuredImage }) {
           </h5>
         </Link>
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
-          {/* You can add a short description here if available */}
           Click below to read the full post.
         </p>
         <Link

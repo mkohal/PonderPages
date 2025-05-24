@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
@@ -20,49 +20,84 @@ export default function PostForm({ post }) {
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
 
+  const uploadToCloudinary = async (file) => {
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok)
+      throw new Error(data.error?.message || "Cloudinary upload failed");
+
+    return data.secure_url;
+  };
+
   const submit = async (data) => {
     setIsUploading(true);
     try {
-      if (post) {
-        const file = data.image[0]
-          ? await appwriteService.uploadFile(data.image[0])
-          : null;
+      const image = data.image[0];
+      let imageUrl = post?.featuredImage || "";
 
-        if (file) {
-          appwriteService.deleteFile(post.featuredImage);
-        }
+      if (image) {
+        const formData = new FormData();
+        formData.append("file", image);
+        formData.append(
+          "upload_preset",
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+        );
+        formData.append(
+          "cloud_name",
+          import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+        );
 
-        const dbPost = await appwriteService.updatePost(post.$id, {
-          ...data,
-          featuredImage: file ? file.$id : undefined,
-        });
-
-        if (dbPost) {
-          navigate(`/post/${dbPost.$id}`);
-        }
-      } else {
-        const file = await appwriteService.uploadFile(data.image[0]);
-
-        if (file) {
-          const fileId = file.$id;
-          data.featuredImage = fileId;
-          const dbPost = await appwriteService.createPost({
-            ...data,
-            userId: userData.$id,
-          });
-
-          if (dbPost) {
-            navigate(`/post/${dbPost.$id}`);
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${
+            import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+          }/image/upload`,
+          {
+            method: "POST",
+            body: formData,
           }
-        }
+        );
+
+        const uploadedImage = await response.json();
+        imageUrl = uploadedImage.secure_url;
+      }
+
+      const postData = {
+        ...data,
+        featuredImage: imageUrl,
+        userId: userData.$id, // ✅ Must include this
+      };
+
+      let dbPost;
+      if (post) {
+        dbPost = await appwriteService.updatePost(post.$id, postData);
+      } else {
+        dbPost = await appwriteService.createPost(postData); // ✅ userId is now included
+      }
+
+      if (dbPost) {
+        navigate(`/post/${dbPost.$id}`);
       }
     } catch (error) {
-      console.error("Upload failed:", error);
+      console.error("Post submission failed:", error);
     } finally {
       setIsUploading(false);
     }
   };
-
   const slugTransform = useCallback((value) => {
     if (value && typeof value === "string")
       return value
@@ -70,17 +105,15 @@ export default function PostForm({ post }) {
         .toLowerCase()
         .replace(/[^a-zA-Z\d\s]+/g, "-")
         .replace(/\s/g, "-");
-
     return "";
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name === "title") {
         setValue("slug", slugTransform(value.title), { shouldValidate: true });
       }
     });
-
     return () => subscription.unsubscribe();
   }, [watch, slugTransform, setValue]);
 
@@ -89,7 +122,7 @@ export default function PostForm({ post }) {
       onSubmit={handleSubmit(submit)}
       className="flex flex-col md:flex-row flex-wrap gap-6"
     >
-      {/* Left Side - Inputs */}
+      {/* Left - Inputs */}
       <div className="w-full md:w-2/3 px-2">
         <Input
           label="Title :"
@@ -116,7 +149,7 @@ export default function PostForm({ post }) {
         />
       </div>
 
-      {/* Right Side - Image & Status */}
+      {/* Right - Image + Status */}
       <div className="w-full md:w-1/3 px-2">
         <Input
           label="Featured Image :"
@@ -125,10 +158,10 @@ export default function PostForm({ post }) {
           accept="image/png, image/jpg, image/jpeg, image/gif"
           {...register("image", { required: !post })}
         />
-        {post && (
+        {post?.featuredImage && (
           <div className="w-full mb-4 flex justify-center">
             <img
-              src={appwriteService.getFilePreview(post.featuredImage)}
+              src={post.featuredImage}
               alt={post.title}
               className="rounded-lg max-w-full h-auto"
             />
@@ -137,7 +170,7 @@ export default function PostForm({ post }) {
         <Select
           options={["active", "inactive"]}
           label="Status :"
-          className="mb-4 "
+          className="mb-4"
           {...register("status", { required: true })}
         />
         <Button

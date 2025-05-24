@@ -7,11 +7,10 @@ import { useSelector } from "react-redux";
 
 export default function Post() {
   const [post, setPost] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false); // Deleting state
+  const [isDeleting, setIsDeleting] = useState(false);
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  // Getting userData from Redux store
   const userData = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
@@ -24,17 +23,19 @@ export default function Post() {
   }, [slug, navigate]);
 
   const deletePost = async () => {
-    setIsDeleting(true); // Start deleting
+    setIsDeleting(true);
     try {
       const status = await appwriteService.deletePost(post.$id);
       if (status) {
-        await appwriteService.deleteFile(post.featuredImage);
+        // If you still store any Appwrite file ID and want to delete, do it here
+        // But if images are on Cloudinary, no need to call deleteFile()
+        // await appwriteService.deleteFile(post.featuredImage);
         navigate("/my-posts");
       }
     } catch (error) {
       console.error("Error deleting post:", error);
     } finally {
-      setIsDeleting(false); // Stop deleting
+      setIsDeleting(false);
     }
   };
 
@@ -44,7 +45,7 @@ export default function Post() {
         <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
           <div className="w-[500px] h-[300px] overflow-hidden rounded-xl">
             <img
-              src={appwriteService.getFilePreview(post.featuredImage)}
+              src={post.featuredImage}
               alt={post.title}
               className="w-full h-full object-cover"
             />
@@ -75,7 +76,5 @@ export default function Post() {
     </div>
   ) : null;
 }
-
-
 
 
